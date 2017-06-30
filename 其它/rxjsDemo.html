@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+	<script>
+		/* Only get the value from each key up */
+	var btnTest1 = document.getElementById("btnTest1");
+	var clicks = Rx.Observable.fromEvent(btnTest1, 'click').map(function(event) {
+		return event.clientX;
+	}).filter(function(clientX) {
+		return clientX % 2 == 0;
+	});
+
+	var subscription = clicks.subscribe(
+		function(x) {
+			console.log(x);
+		},
+		function(err) {
+			console.log('Error: ' + err);
+		},
+		function() {
+			console.log('Completed');
+		}
+	);
+	//	//from array
+	//	Rx.Observable.from(["hello","is","me"]).subscribe(function(success){
+	//		console.log("success:"+success);
+	//	});
+	//	//from event
+	//	Rx.Observable.fromEvent(document,"mousemove").subscribe(function(e){
+	//		console.log(e.clientX,e.clientY);
+	//	});
+
+	//过滤
+	//	var srcAllMove=Rx.Observable.fromEvent(document,"mousemove");
+	//	srcAllMove.filter(function(e){
+	//		return e.clientY>window.innerHeight/2;
+	//	}).map(function(e){
+	//		return "("+e.clientX+","+e.clientY+")";
+	//	}).subscribe(function(s){
+	//		console.log(s);
+	//	});
+
+	//合并流
+	//	var srcA=Rx.Observable.interval(1000).map(function(i){
+	//		return 'A'+i;
+	//	});
+	//	var srcB=Rx.Observable.interval(2000).map(function(i){
+	//		return 'B'+i;
+	//	});
+	//	var srcMerge=Rx.Observable.merge(srcA,srcB);
+	//	srcMerge.subscribe(function(s){
+	//		console.log(s);
+	//	});
+
+	//reduce
+	//var srcA=Rx.Observable.from([1,2,3,4,5,6,7,8,9,10])
+	//;
+	//srcA.reduce(function(pre,cur){
+	//	return pre+cur;
+	//}).subscribe(function(e){
+	//	console.log("sum="+e);
+	//});
+	//srcA.reduce(function(pre,cur){
+	//	pre.count++;
+	//	pre.sum+=cur;
+	//	return pre;
+	//},{"count":0,"sum":0}).subscribe(function(e){
+	//	console.log("count:"+e.count+",sum="+e.sum+",avg:"+(e.sum/e.count));
+	//});
+	//
+	////scan
+	//srcA.scan(function(pre,cur){
+	//	pre.count++;
+	//	pre.sum+=cur;
+	//	return pre;
+	//},{"count":0,"sum":0}).subscribe(function(e){
+	//	console.log("scan-->count:"+e.count+",sum="+e.sum+",avg:"+(e.sum/e.count));
+	//});
+
+	//contactAll
+	//function concatAll(src){
+	//	return src.reduce(function(pre,cur){
+	//		return pre.concat(cur);
+	//	});
+	//}
+	//var ary1=[[1,2,3],[4,5,6]];
+	//var src=Rx.Observable.from(ary1);
+	//concatAll(src).subscribe(function(e){
+	//	console.log(e);
+	//	console.log(ary1);
+	//})
+
+	////取消订阅
+	//var counter=Rx.Observable.interval(1000);
+	//var sub1=counter.subscribe(function(e){
+	//	console.log("sub1:"+e);
+	//});
+	//var sub2=counter.subscribe(function(e){
+	//	console.log("sub2:"+e);
+	//});
+	//setTimeout(function(){
+	//	sub2.dispose();
+	//},3000);
+
+	////side effect
+	//var promise1=new Promise(function(resolve,reject){
+	//	window.setTimeout(resolve,5000);	
+	//});
+	//promise1.then(function(){
+	//	console.log("side effect!");
+	//});
+	//var sub1=Rx.Observable.fromPromise(promise1).subscribe(function(e){
+	//	console.log("on sub1");
+	//});
+	//sub1.dispose();
+
+	////error
+	//function getJSON(ary){
+	//	return Rx.Observable.from(ary).map(function(str){
+	//		return JSON.parse(str);
+	//	});
+	//}
+	//var ary=["{}","[]","aaa","{'b':'bbb'}"];
+	//var src=getJSON(ary);
+	////src.subscribe(function(s){
+	////	console.log(s);
+	////},function(err){
+	////	console.log(err);
+	////});
+	//
+	//src.catch(
+	//Rx.Observable.return({
+	//error: 'There was an error parsing JSON'
+	//})).subscribe(function(s){
+	//	console.log(s);
+	//},function(err){
+	//	console.log(err);
+	//});
+
+	////distinct
+	//var src=Rx.Observable.from([1,2,3,4,5,4,3,2,8])
+	//.distinct().subscribe(function(s){
+	//	console.log(s);
+	//});
+	//even tick
+	//var src=Rx.Observable.interval(1000).scan(function(pre,cur){
+	//	if(cur%2==0){
+	//		pre++;
+	//	}
+	//	return pre;
+	//},0).filter(function(n){
+	//	
+	//});
+	//src.subscribe(function(s){
+	//	console.log("s1:"+s);
+	//});
+	//src.subscribe(function(s){
+	//	console.log("s2:"+s);
+	//});
+
+	//subject
+	//var subject=new Rx.Subject();
+	//var subject=new Rx.AsyncSubject();
+	//var source=Rx.Observable.interval(300).take(10);
+	//var sub=source.subscribe(subject);
+	//subject.subscribe(function(e){
+	//	console.log(e);
+	//});
+	//subject.onNext("aaa");
+	//subject.onNext("bbb");
+	//setTimeout(function(){
+	//	sub.dispose();
+	//	subject.subscribe(function(e){
+	//		console.log("last",e);
+	//	})
+	//},3000);
+
+	//	function getProducts(url) {
+	//		var subject;
+	//		return Rx.Observable.create(function(observer) {
+	//			if(!subject) {
+	//				subject = new Rx.AsyncSubject();
+	//				Rx.Observable.from(url).subscribe(subject);
+	//			}
+	//			return subject.subscribe(observer);
+	//		});
+	//	}
+	//	var products = getProducts('./aa.json');
+	//	// Will trigger request and receive the response when read
+	//	products.subscribe(
+	//		function onNext(result) {
+	//			console.log('Result 1:', result);
+	//		},
+	//		function onError(error) {
+	//			console.log('ERROR', error);
+	//		}
+	//	);
+	//	// Will receive the result immediately because it's cached
+	//	setTimeout(function() {
+	//		products.subscribe(
+	//			function onNext(result) {
+	//				console.log('Result 2:', resul);
+	//			},
+	//			function onError(error) {
+	//				console.log('ERROR', error);
+	//			}
+	//		);
+	//	}, 5000);
+	</script>
+	</body>
+</html>
+

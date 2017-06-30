@@ -1,0 +1,54 @@
+<script>
+//背包问题求解，递归的方式实现
+//pp341
+var things=[{w:5,v:40},{w:2,v:12},{w:1,v:7},{w:1,v:8},{w:6,v:48}];
+var wlimits=8;
+var LENGTH=things.length;
+var maxValue=0;
+var selects=[];
+var tmpSelects=[];
+function bag(aryThings,i,curWeight,leftValue){
+	var m=aryThings[i];
+	if(m.w+curWeight<=wlimits){
+		tmpSelects[i]=1;
+		if(i+1<LENGTH){
+			bag(aryThings,i+1,curWeight+m.w,leftValue);
+		}else{//the last one
+			for(var i=0;i<LENGTH;i++){
+				selects[i]=tmpSelects[i];
+			}
+			maxValue=leftValue;
+		}
+	}
+	tmpSelects[i]=0;
+	if(leftValue-m.v>=maxValue){
+		
+		if(i+1<LENGTH){
+			bag(aryThings,i+1,curWeight,leftValue-m.v);
+		}else{
+			for(var i=0;i<LENGTH;i++){
+				selects[i]=tmpSelects[i];
+			}
+			maxValue=leftValue-m.v;
+		}
+	}
+}
+function main(){
+	var totalValue=0;
+	for(var i=0;i<LENGTH;i++){
+		totalValue+=things[i].v;
+	}
+	console.log("totalValue:"+totalValue);
+	for(var i=0;i<LENGTH;i++){
+		tmpSelects[i]=0;
+	}
+	bag(things,0,0,totalValue);
+	console.log("selects:");
+	for(var i=0;i<LENGTH;i++){
+		if(selects[i]===1){
+			console.log(things[i].w+"->"+things[i].v);
+		}
+	}
+}
+main();
+</script>

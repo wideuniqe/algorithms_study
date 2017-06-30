@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<body>
+		<script>
+			function Producer(){
+				this.listeners=[];
+			}
+			Producer.prototype.add=function(listener){
+				this.listeners.push(listener);
+			}
+			Producer.prototype.remove=function(listener){
+				var idx=this.listeners.indexOf(listener);
+				if(idx>=0){
+					//这里要用splice,不能用slice
+					this.listeners.splice(idx,1);
+				}
+			}
+			Producer.prototype.notify=function(msg){
+				for(var i=0;i<this.listeners.length;i++){
+					this.listeners[i].onMsg(msg);
+				}
+			}
+			
+			var producer=new Producer();
+			var l1={
+				onMsg:function(msg){
+					console.log("l1 msg:"+msg);
+				}
+			};
+			var l2={
+				onMsg:function(msg){
+					console.log("l2 msg:"+msg);
+				}
+			};
+			producer.add(l1);
+			producer.add(l2);
+			producer.notify("hello");
+			producer.remove(l1);
+			producer.notify("hello2");
+		</script>
+	</body>
+</html>
