@@ -1,0 +1,111 @@
+<script src="LinkedList.js"></script>
+<script src="Stack.js"></script>
+<script>
+function isOper(s){
+    var opers=['+','-','*','/','(',')','#','%'];
+    return opers.indexOf(s)>=0;
+}
+function isNum(s){
+    var numbers=['0','1','2','3','4','5','6','7','8','9'];
+    return numbers.indexOf(s)>=0;
+}
+function operPriority(oper1,oper2){
+    var operIdxs=['+','-','*','/','(',')','#','%'];
+    var matrix=[[ 1, 1,-1,-1,-1, 1, 1,-1],
+                [ 1, 1,-1,-1,-1, 1, 1,-1],
+                [ 1, 1, 1, 1,-1, 1, 1, 1],
+                [ 1, 1, 1, 1,-1, 1, 1, 1],
+                [-1,-1,-1,-1,-1, 0, undefined,-1],
+                [ 1, 1, 1, 1, undefined, 1, 1,1],
+                [-1,-1,-1,-1,-1, undefined,0,-1],
+                [ 1, 1, 1, 1,-1, 1, 1, 1]
+               ];
+    var idx1=operIdxs.indexOf(oper1);
+    var idx2=operIdxs.indexOf(oper2);
+    return matrix[idx1][idx2];
+}
+var mapFunc={};
+mapFunc['+']=function(num1,num2){
+    return num1+num2;
+};
+mapFunc['-']=function(num1,num2){
+    return num1-num2;
+};
+mapFunc['*']=function(num1,num2){
+    return num1*num2;
+};
+mapFunc['/']=function(num1,num2){
+    return num1/num2;
+};
+mapFunc['%']=function(num1,num2){
+    return num1%num2;
+};
+//执行一步计算
+function operate(oper,num1,num2){
+   
+    var rtn= mapFunc[oper](num1,num2);
+    console.log(num1+oper+num2+'='+rtn);
+    return rtn;
+}
+function calc(str){
+    var rtn=0;
+    var operStack=new Stack();
+    var numStack=new Stack();
+    operStack.push('#');
+    str=str+'#';
+    var lastNum='';
+    for(var i=0;i<str.length;i++){
+        var s=str[i];
+        if(isNum(s)){
+            lastNum+=s;
+        }else if(isOper(s)){
+            if(lastNum.length>0){
+                numStack.push(parseFloat(lastNum));
+                lastNum='';
+                //console.log(numStack.getTop());
+            }
+            while(true){
+                var oper1=operStack.getTop();
+                var oper2=s;
+                var priority=operPriority(oper1,oper2);
+                if(priority<0){
+                    operStack.push(oper2);
+                    break;
+                }else if(priority>0){
+                    var num2=numStack.pop();
+                    var num1=numStack.pop();
+                    var result=operate(oper1,num1,num2);
+                    numStack.push(result);
+                    operStack.pop();
+                
+                }else{
+                    operStack.pop();
+                    break;
+                }
+            }
+        }else{
+            throw s+" is invalid char!"
+        }
+    }
+    rtn=numStack.getTop();
+    return rtn;
+}
+function testCalc(str,beVal){
+    var rtn=calc(str);
+     console.log('-->'+str+'='+rtn);
+     
+    if(beVal!=undefined&&rtn!=beVal){
+        throw 'calc(\''+str+'\') must be '+beVal;
+    }else{
+        return true;
+    }
+}
+function main(){
+  testCalc('3*(71-2)',3*(71-2));
+  testCalc('4+2*3-10/5');
+  testCalc('(2+3)*5');
+  testCalc('(2+3)*5+11%5');
+}
+
+main();
+</script>

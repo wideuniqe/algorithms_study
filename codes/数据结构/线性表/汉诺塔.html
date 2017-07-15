@@ -1,0 +1,19 @@
+<script src="LinkedList.js"></script>
+<script src="Stack.js"></script>
+<script>
+function hanoi(n,x,y,z){
+    if(n==1){
+        console.log(''+n+"from "+x+"->"+z);
+    }else{
+        hanoi(n-1,x,z,y);
+        console.log(''+n+"from "+x+"->"+z);
+        hanoi(n-1,y,x,z);
+    }
+}
+
+function main(){
+  hanoi(10,'x','y','z');
+}
+
+main();
+</script>

@@ -1,0 +1,20 @@
+<script src="LinkedList.js"></script>
+<script src="Stack.js"></script>
+<script>
+function main(){
+  var stack=new Stack();
+  for(var i=0;i<10;i++){
+      stack.push(i);
+       console.log(stack.getTop());
+  }
+ 
+  while(stack.size()>0){
+      console.log(stack.pop());
+  }
+  console.log(stack.size());
+  console.log(stack.pop());
+   console.log(stack.size());
+}
+
+main();
+</script>
