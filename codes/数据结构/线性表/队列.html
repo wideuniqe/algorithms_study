@@ -1,0 +1,28 @@
+<script src="LinkedList.js"></script>
+<script src="Queue.js"></script>
+<script>
+function main(){
+  var queue=new Queue(function(d1,d2){
+      if(d1>d2){
+          return 1;
+      }else if(d1==d2){
+          return 0;
+      }else{
+          return -1;
+      }
+  });
+  for(var i=10;i>=1;i--){
+      queue.enqueue(i);
+       console.log(queue.getHead());
+  }
+ 
+  while(queue.size()>0){
+      console.log(queue.dequeue());
+  }
+  console.log(queue.size());
+  console.log(queue.dequeue());
+   console.log(queue.size());
+}
+
+main();
+</script>

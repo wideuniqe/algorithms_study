@@ -1,0 +1,120 @@
+<script src="LinkedList.js"></script>
+<script src="Queue.js"></script>
+<script>
+var MAX_WAITING_QUEUES=4;//可用的排队的队列数
+var CLOSE_TIME=8*60;//下班时间（分钟），工作8小时
+//事件队列，按事件的到达时间排序
+var eventQueue=new Queue(function(d1,d2){
+      if(d1.occurtime>d2.occurtime){
+          return 1;
+      }else if(d1.occurtime==d2.occurtime){
+          return 0;
+      }else{
+          return -1;
+      }
+  });
+var waitingQueues=new LinkedList();
+for(var i=0;i<MAX_WAITING_QUEUES;i++){
+    var m=new Queue();
+    waitingQueues.add(m);
+}
+var totalTime=0;//累计所有客户的逗留时间
+var totalCustomer=0;//累讲的客户数
+function getShortestWaitingQueueIdx(){
+    var minSize=waitingQueues.get(0).size();
+    var minIdx=0;
+    for(var i=1;i<waitingQueues.size();i++){
+        var q=waitingQueues.get(i);
+        if(minSize>q.size()){
+            minSize=q.size();
+            minIdx=i;
+        }
+    }
+    return minIdx;
+}
+function GetRandomNum(Min,Max)
+{   
+    var Range = Max - Min;   
+    var Rand = Math.random();   
+    return(Min + Math.round(Rand * Range));   
+}  
+function nextDurtime(){
+    return GetRandomNum(1,30)
+    //return 30;
+}
+function nextIntertime(){
+    return GetRandomNum(1,10);
+    //return 5;
+}
+function customerArrived(event){
+    totalCustomer++;
+    var durtime=nextDurtime();
+    var intertime=nextIntertime();
+    //下一个用户的到达时间
+    var t=event.occurtime+intertime;
+    //若银行未关门，则插入事件表
+    if(t<CLOSE_TIME){
+        var event0={};
+        event0.occurtime=t;
+        event0.type=-1;
+        eventQueue.enqueue(event0);
+    }else{
+        console.info("t>=CLOSE_TIME,the bank is closed!");
+    }
+    //排队
+    var waitIdx=getShortestWaitingQueueIdx();
+    var waitQueue=waitingQueues.get(waitIdx);
+    var customer={
+        'id':totalCustomer,
+        'arrivaltime':event.occurtime,
+        'durtime':durtime
+    };
+    waitQueue.enqueue(customer);
+    console.log('customer '+customer.id+' Arrived at '+event.occurtime);
+    //如果原来为空队，则处理刚加入的用户的请求，发送离开事件
+    if(waitQueue.size()==1){
+        var event0={};
+        event0.occurtime=event.occurtime+durtime;
+        event0.type=waitIdx;
+        eventQueue.enqueue(event0);
+    }
+
+}
+
+function customerLeave(event){
+    var waitIdx=event.type;
+    var waitQueue=waitingQueues.get(waitIdx);
+    var customer=waitQueue.dequeue();
+    var realSpendTime=event.occurtime-customer.arrivaltime;//用户在银行逗留的时间
+    totalTime+=realSpendTime;
+    console.log('customer '+customer.id+' Leave at '+event.occurtime);
+    //处理下一个排队的用户
+    if(waitQueue.size()>0){
+        var nextCustomer=waitQueue.getHead();
+        var event0={};
+        event0.occurtime=event.occurtime+nextCustomer.durtime;
+        event0.type=waitIdx;
+        eventQueue.enqueue(event0);
+    }
+}
+
+function main(){
+    //加入第一个用户到达事件
+    var event0={};
+    event0.occurtime=0;
+    event0.type=-1;
+    eventQueue.enqueue(event0);
+
+    while(eventQueue.size()>0){
+       var event=eventQueue.dequeue();
+       if(event.type===-1){
+            customerArrived(event);
+       }else{
+           customerLeave(event);
+       }
+    }
+    console.log('average time is '+(totalTime/totalCustomer)+' minutes');
+}
+
+main();
+</script>
