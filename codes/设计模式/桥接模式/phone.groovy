@@ -20,7 +20,6 @@ class XiaomiPhone extends PhoneBrand{
 }
 abstract class PhoneSoft{
 	abstract void run()
-	String name
 }
 
 class QQSoft extends PhoneSoft{
