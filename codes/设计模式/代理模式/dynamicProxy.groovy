@@ -11,7 +11,7 @@ class ConcreteSubject implements Subject{
 }
 class DynamicProxy implements InvocationHandler{
 	Subject realSubject
-	public Object invoke(Object target, Method method, Object[] args)
+	public Object invoke(Object proxy, Method method, Object[] args)
 	throws Throwable{
 		println "before:"+method.name
 		Object obj=null
